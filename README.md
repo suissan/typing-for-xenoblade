@@ -1,2 +1,4 @@
-# typingGame-for-xenoblade
-  主にゼノブレイド3をモチーフにしています。
+# typing-for-xenoblade
+
+ゼノブレイドを題材にしたタイピングサイトです。
+[サイトはこちら](https://suissan.github.io/typing-for-xenoblade/typing-game.html)
