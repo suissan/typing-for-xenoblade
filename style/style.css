@@ -10,8 +10,8 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background-image: url(image/nia1.jpg),
-        url(image/nia2.jpg);
+    background-image: url(../image/nia1.jpg),
+        url(../image/nia2.jpg);
     /* この時点で画像が読み込まれてるからjs側でstyle操作したときにラグ無しで表示できる*/
     background-position: center;
     background-size: 100%;

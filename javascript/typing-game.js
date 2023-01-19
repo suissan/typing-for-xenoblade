@@ -99,7 +99,7 @@ addEventListener("keydown", (e) => {
             createSound(lastSoundArray, 'last', 'ended')
                 .then(() => {
                     container.style.opacity = 0.8;
-                    getBody.style.backgroundImage = 'url(image/nia2.jpg)';
+                    getBody.style.backgroundImage = 'url(../image/nia2.jpg)';
                     playBgm(chainAttack, 0.4, true);
                     renderNextSentence();
                 });
@@ -137,7 +137,7 @@ addEventListener('keydown', (event) => {
     if (event.key === " " && startFlag === true) {
         startFlag = false;
         container.style.opacity = 1;
-        getBody.style.backgroundImage = 'url(image/nia1.jpg)';
+        getBody.style.backgroundImage = 'url(../image/nia1.jpg)';
         startCountDown.style.display = "block";
         startCountDownFnc();
         createSound(noaSoundArray, 'start');

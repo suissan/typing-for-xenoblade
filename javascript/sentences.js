@@ -16,5 +16,5 @@ export const sentencesToBeTyped = [
     { chara: 'ゴンドウ', sentenceJa: 'お前らが作った未来に生まれてこれるなんて最高じゃねーか', sentence: 'おまえらがつくったみらいに　うまれてこれるなんて　さいこうじゃねーか' },
     { chara: 'セナ', sentenceJa: 'もう 一緒に筋トレできないね', sentence: 'もういっしょにきんとれできないね' },
     { chara: 'ランツ', sentenceJa: '死ぬ気でやんのと死ににいくのは全然違ぇよ', sentence: 'しぬきでやんのと　しににいくのはぜんぜんちげぇよ' },
-    { chara: 'ユーニ', sentenceJa: 'よしわかった 殴る おいノア こいつ殴っていいよな！', sentence: 'よしわかったなぐる　おいのあこいつなぐっていいよな！' },
+    { chara: 'ユーニ', sentenceJa: 'よしわかった 殴る おいノア こいつ殴っていいよな！', sentence: 'よしわかったなぐる　おいのあこいつなぐっていいよな！' }
 ];
