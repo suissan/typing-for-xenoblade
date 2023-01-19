@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>typing Game</title>
+</head>
+
+<body>
+    <input type="hidden" id="a" autofocus>
+    <div class="timer" id="timer" style="display: none;"></div>
+    <div class="container" id="container">
+        <h3 class="start-count-down" id="startCountDown"></h3>
+        <div class="start-title" id="startTitle">
+            <h2>Xenoblade3 Typing</h2>
+            <p class="start-message-one">Please Space key</p>
+        </div>
+        <div id="mainContents">
+            <div id="xenoCharacter"></div>
+            <div id="sentenceJaDisplay"></div>
+            <div class="type-display" id="typeDisplay" onContextmenu="return false;"></div>
+        </div>
+        <div id="finishMessages">
+            <h2 class="finish-message-one" id="finishMessageOne"></h2>
+            <p class="finish-message-two" id="finishMessageTwo"></p>
+        </div>
+    </div>
+    <script type="module" src="typing-game.js"></script>
+</body>
+
+</html>
