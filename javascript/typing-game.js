@@ -1,6 +1,7 @@
 'use strict';
 
 const getBody = document.body;
+const entireTime = document.getElementById('entireTime');
 const timer = document.getElementById('timer');
 const container = document.getElementById('container');
 const startCountDown = document.getElementById('startCountDown');
@@ -22,9 +23,10 @@ const youWillRecallOurNames = new Audio('./audio/You-Will-Recall-Our-Names.mp3')
 const chainAttack = new Audio("./audio/chain-attack.mp3");
 const typeSound = new Audio("./audio/typing-sound.mp3");
 
-import { romanMap } from "./romanMap.js";
-
-import { sentencesToBeTyped } from './sentences.js'
+import { romanMap } from './romanMap.js';
+import { sentencesToBeTyped } from './sentences.js';
+import { scoreFunc } from './score.js';
+scoreFunc();
 
 const splicedSentencesArray = [];
 
@@ -55,7 +57,7 @@ addEventListener("keydown", (e) => {
     }
 
     typedKeyArray.push(KEY);
-    
+
     const sentenceArray = typeDisplay.querySelectorAll("span") // typeDisplayの子要素に設定したスパンタグを取得 型は配列
 
     let correct = true; // タイピング成功のフラグ
@@ -88,6 +90,9 @@ addEventListener("keydown", (e) => {
     });
 
     if (correct == true) {
+        //console.log(timer.innerText);
+        //scoreFunc();
+        paused = true;
         canPushKey = false;
         const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
         splicedSentencesArray.push(splicedSentence[0]);
@@ -146,6 +151,7 @@ addEventListener('keydown', (event) => {
             timer.style.display = "block";
             canPushKey = true;
             renderNextSentence();
+            gameTime();
             playBgm(youWillRecallOurNames, 0.05, true);
         }, 3000);
     }
@@ -244,6 +250,8 @@ function renderNextSentence() {
     /*テキストボックスの中身を消す */
     typedKeyArray.length = 0;
 
+    paused = false;
+
     canPushKey = true;
 
     startTimer();
@@ -274,7 +282,7 @@ let interval;
  * タイプ時間のカウントダウンをする関数
  */
 function startTimer() {
-    const originTime = 15; // 15から引くことはするけど timer.innerText に 30から引いた値を代入するため定数30そのものは変わらない
+    const originTime = 1000; // 15から引くことはするけど timer.innerText に 30から引いた値を代入するため定数30そのものは変わらない
     timer.innerText = originTime;
     startTime = new Date(); // 1番最初に起動
     interval = setInterval(() => {
@@ -397,6 +405,27 @@ function arrayToArray(sourceArray, newArray) {
     for (let i = 0; i < sourceArray.length; i++) {
         newArray.push(sourceArray[i]);
     }
+}
+
+let paused = false; // 時間経過のフラグ
+let entireTimerId;
+/**
+ * タイピングゲーム全体の制限時間を処理する関数
+ */
+function gameTime() {
+    let entire = 5;
+    entireTime.innerText = `残り ${entire} 秒`;
+    entireTimerId = setInterval(() => {
+        /** pausedがtrueになるとreturnで後続の処理がされなくて時間経過が一時停止する */
+        if (paused) {
+            return;
+        }
+        entire--;
+        entireTime.innerText = `残り ${entire} 秒`;
+        if (entire <= 0) {
+            clearInterval(entireTimerId);
+        }
+    }, 1000);
 }
 
 //console.log('test');

@@ -83,9 +83,27 @@ body {
     font-size: 3rem;
 }
 
+.entire {
+    position: absolute;
+    top: 1rem;
+    font-size: 5rem;
+    font-weight: bold;
+    color: rgb(255, 0, 0);
+    z-index: 1;
+}
+
+.score {
+    position: absolute;
+    top: 8rem;
+    font-size: 3rem;
+    font-weight: bold;
+    color: rgb(54, 82, 225);
+    z-index: 1;
+}
+
 .timer {
     position: absolute;
-    top: 2rem;
+    top: 12rem;
     font-size: 5rem;
     font-weight: bold;
     color: rgb(202, 82, 87);
