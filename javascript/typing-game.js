@@ -26,8 +26,6 @@ import { romanMap } from "./romanMap.js";
 
 import { sentencesToBeTyped } from './sentences.js'
 
-console.log('testAt15')
-
 const splicedSentencesArray = [];
 
 const typedKeyArray = [];
