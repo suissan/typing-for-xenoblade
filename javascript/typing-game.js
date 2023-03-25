@@ -25,8 +25,8 @@ const typeSound = new Audio("./audio/typing-sound.mp3");
 
 import { romanMap } from './romanMap.js';
 import { sentencesToBeTyped } from './sentences.js';
-import { scoreFunc } from './score.js';
-scoreFunc();
+//import { scoreFunc } from './score.js';
+//scoreFunc();
 
 const splicedSentencesArray = [];
 
@@ -91,10 +91,7 @@ addEventListener("keydown", (e) => {
 
     if (correct == true) {
         //console.log(timer.innerText);
-        //scoreFunc();
-        //
-        // スコアの処理
-        //
+        scoreFunc(sentenceArray);
         paused = true;
         canPushKey = false;
         const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
@@ -285,7 +282,7 @@ let interval;
  * タイプ時間のカウントダウンをする関数
  */
 function startTimer() {
-    const originTime = 1000; // 15から引くことはするけど timer.innerText に 30から引いた値を代入するため定数30そのものは変わらない
+    const originTime = 15; // 15から引くことはするけど timer.innerText に 30から引いた値を代入するため定数30そのものは変わらない
     timer.innerText = originTime;
     startTime = new Date(); // 1番最初に起動
     interval = setInterval(() => {
@@ -431,5 +428,16 @@ function gameTime() {
     }, 1000);
 }
 
+const scoreDisplay = document.getElementById('score');
+let score = 0;
+
+function scoreFunc(sentence) {
+    const LengthOfTargetText = sentence.length; // 文章の長さ
+    const tentativeScore = LengthOfTargetText * 10; // tentative → 「仮の」
+    const finalyScore = tentativeScore; // ここからもっと細かくする予定
+    score += finalyScore;
+    scoreDisplay.innerText = score;
+}
+
 //console.log('test');
-//console.log(sentencesToBeTyped.length);
+//console.log(sentencesToBeTyped.length); 
