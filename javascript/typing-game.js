@@ -92,6 +92,9 @@ addEventListener("keydown", (e) => {
     if (correct == true) {
         //console.log(timer.innerText);
         //scoreFunc();
+        //
+        // スコアの処理
+        //
         paused = true;
         canPushKey = false;
         const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
