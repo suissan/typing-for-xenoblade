@@ -25,8 +25,6 @@ const typeSound = new Audio("./audio/typing-sound.mp3");
 
 import { romanMap } from './romanMap.js';
 import { sentencesToBeTyped } from './sentences.js';
-//import { scoreFunc } from './score.js';
-//scoreFunc();
 
 const splicedSentencesArray = [];
 
@@ -35,6 +33,8 @@ const typedKeyArray = [];
 let canPushKey = false;
 
 let countEight = 0;
+
+let missCount = 0;
 //let correctCount = 0;
 /* inputテキスト入力 合っているかどうかの判定 */
 addEventListener("keydown", (e) => {
@@ -81,7 +81,9 @@ addEventListener("keydown", (e) => {
             characterSpan.classList.add("correct");
             characterSpan.classList.remove("incorrect");
         } else {
-            typedKeyArray.splice(index, 1)
+            typedKeyArray.splice(index, 1);
+            missCount++;
+            console.log(missCount)
             characterSpan.classList.add("incorrect");
             characterSpan.classList.remove("correct");
             createSound(wrongSoundArray, 'miss');
