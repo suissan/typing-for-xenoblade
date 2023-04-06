@@ -34,7 +34,7 @@ let canPushKey = false;
 
 let countEight = 0;
 
-let missCount = 0;
+let missCounter = 0;
 //let correctCount = 0;
 /* inputテキスト入力 合っているかどうかの判定 */
 addEventListener("keydown", (e) => {
@@ -82,8 +82,8 @@ addEventListener("keydown", (e) => {
             characterSpan.classList.remove("incorrect");
         } else {
             typedKeyArray.splice(index, 1);
-            missCount++;
-            console.log(missCount)
+            missCounter++;
+            console.log(missCounter);
             characterSpan.classList.add("incorrect");
             characterSpan.classList.remove("correct");
             createSound(wrongSoundArray, 'miss');
@@ -93,7 +93,7 @@ addEventListener("keydown", (e) => {
 
     if (correct == true) {
         //console.log(timer.innerText);
-        scoreFunc(sentenceArray);
+        scoreFunc(sentenceArray, timer.innerText, missCounter);
         paused = true;
         canPushKey = false;
         const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
@@ -255,6 +255,8 @@ function renderNextSentence() {
     paused = false;
 
     canPushKey = true;
+
+    missCounter = 0;
 
     startTimer();
 }
@@ -433,13 +435,32 @@ function gameTime() {
 const scoreDisplay = document.getElementById('score');
 let score = 0;
 
-function scoreFunc(sentence) {
+function scoreFunc(sentence, finishTime, missCount) {
+    const averageKeySpeed = 5; // 1秒間に叩けるキーの数
     const LengthOfTargetText = sentence.length; // 文章の長さ
-    const tentativeScore = LengthOfTargetText * 10; // tentative → 「仮の」
-    const finalyScore = tentativeScore; // ここからもっと細かくする予定
-    score += finalyScore;
-    scoreDisplay.innerText = score;
+    const averageTypeSpeed = LengthOfTargetText / averageKeySpeed; // タイプ文章を打ち終わる平均時間
+    const takenTime = 15 - finishTime; // 実際にかかった時間
+    console.log('長さ' + LengthOfTargetText);
+    console.log('速さ' + averageTypeSpeed);
+    console.log('実際' + takenTime);
+    let tentativeScore = LengthOfTargetText * 10; // tentative → 「仮の」
+    if (missCount >= 10) {
+        score += 0;
+        scoreDisplay.innerText = score;
+    } else if ((takenTime <= averageTypeSpeed) && (missCount === 0)) {
+        score += tentativeScore;
+        scoreDisplay.innerText = score; // パーフェクトタイプなのでtentativeScoreをそのまま加算
+    } else if ((takenTime <= averageTypeSpeed) && (missCount >= 1)) {
+        score += tentativeScore * 0.8;
+        scoreDisplay.innerText = score;
+    } else if ((takenTime >= averageTypeSpeed) && (missCount === 0)) {
+        score += tentativeScore * 0.7;
+        scoreDisplay.innerText = score;
+    } else if (takenTime >= averageTypeSpeed) {
+        score += tentativeScore * 0.5;
+        scoreDisplay.innerText = score;
+    }
 }
 
 //console.log('test');
-//console.log(sentencesToBeTyped.length); 
+//console.log(sentencesToBeTyped.length);
