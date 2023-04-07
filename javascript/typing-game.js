@@ -13,6 +13,7 @@ const typeDisplay = document.getElementById('typeDisplay');
 const finishMessages = document.getElementById('finishMessages');
 const finishMessageOne = document.getElementById('finishMessageOne');
 const finishMessageTwo = document.getElementById('finishMessageTwo');
+const scoreDisplay = document.getElementById('score');
 const noaSoundArray = ['noa1', 'noa2', 'noa3'];
 const wrongSoundArray = ['miss1', 'miss2', 'miss3', 'miss4', 'miss5'];
 const shoutSoundArray = ['shout1', 'shout2', 'shout3', 'shout4', 'shout5', 'shout6', 'shout7', 'shout8', 'shout9'];
@@ -35,7 +36,7 @@ let canPushKey = false;
 let countEight = 0;
 
 let missCounter = 0;
-//let correctCount = 0;
+
 /* inputテキスト入力 合っているかどうかの判定 */
 addEventListener("keydown", (e) => {
 
@@ -48,7 +49,7 @@ addEventListener("keydown", (e) => {
 
     /* タイプ音をつける */
     if (countEight === 8) {
-        createSound(shoutSoundArray, 'shout');
+        createSound(shoutSoundArray, 'shout', 'mp3');
         countEight = 0;
     } else {
         typeSound.play();
@@ -67,8 +68,6 @@ addEventListener("keydown", (e) => {
             characterSpan.classList.remove("incorrect");
             correct = false;
 
-            /* characterSpanとarrayValueでは同じものではないけど、
-            characterSpanをforEachにかけたときのindexがarrayValueの要素を取るときに都合がいいからifでarrayValueにindexを使っている */
         } else if (
             (characterSpan.innerText === typedKeyArray[index]) || // 表示テキストと入力値が同値
             (characterSpan.id === typedKeyArray[index])) { // 別の打ち方で正解がどうか
@@ -83,17 +82,15 @@ addEventListener("keydown", (e) => {
         } else {
             typedKeyArray.splice(index, 1);
             missCounter++;
-            console.log(missCounter);
             characterSpan.classList.add("incorrect");
             characterSpan.classList.remove("correct");
-            createSound(wrongSoundArray, 'miss');
+            createSound(wrongSoundArray, 'miss', 'mp3');
             correct = false;
         }
     });
 
     if (correct == true) {
-        //console.log(timer.innerText);
-        scoreFunc(sentenceArray, timer.innerText, missCounter);
+        scoreDisplay.innerText = scoreFunc(sentenceArray, timer.innerText, missCounter);
         paused = true;
         canPushKey = false;
         const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
@@ -101,7 +98,7 @@ addEventListener("keydown", (e) => {
         clearInterval(interval); // タイプ成功した瞬間にタイマーを止める
         if (sentencesToBeTyped.length === splicedSentencesArray.length) {
             stopBgm(youWillRecallOurNames);
-            createSound(lastSoundArray, 'last', 'ended')
+            createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
                     container.style.opacity = 0.8;
                     getBody.style.backgroundImage = 'url(../image/nia2.jpg)';
@@ -120,14 +117,14 @@ addEventListener("keydown", (e) => {
             stopBgm(chainAttack);
             playBgm(chainAttackFan, 0.5, false, 'ended')
                 .then(() => {
-                    createSound(allCorrectSoundArray, 'allcorrect', false);
+                    createSound(allCorrectSoundArray, 'allcorrect', 'mp3');
                     finishMessageTwo.style.display = 'block';
                     finishMessageTwo.innerText = 'Restart Please Space key';
                     startFlag = true;
                 });
             return;
         }
-        createSound(correctDialogueArray, 'correct', 'ended')
+        createSound(correctDialogueArray, 'correct', 'mp3', 'ended')
             .then(() => {
                 renderNextSentence();
             });
@@ -145,7 +142,7 @@ addEventListener('keydown', (event) => {
         getBody.style.backgroundImage = 'url(../image/nia1.jpg)';
         startCountDown.style.display = "block";
         startCountDownFnc();
-        createSound(noaSoundArray, 'start');
+        createSound(noaSoundArray, 'start', 'mp3');
         invisibleElement(startTitle, false);
         invisibleElement(finishMessages, true);
         setTimeout(() => {
@@ -154,6 +151,7 @@ addEventListener('keydown', (event) => {
             canPushKey = true;
             renderNextSentence();
             gameTime();
+            scoreDisplay.innerText = 0;
             playBgm(youWillRecallOurNames, 0.05, true);
         }, 3000);
     }
@@ -282,6 +280,7 @@ function createBrFunc() {
 
 let startTime;
 let interval;
+
 /**
  * タイプ時間のカウントダウンをする関数
  */
@@ -298,34 +297,39 @@ function startTimer() {
     }, 1000);
 }
 
-/* startTimeは固定だから 今(newDate()) - startTime で1秒立つたびに差が1秒増える → return 1... return 2 */
+/**
+ * startTimeは固定だから 今(newDate()) - startTime で1秒立つたびに差が1秒増える → return 1... return 2
+ */
 function getTimerTime() {
     return Math.floor((new Date() - startTime) / 1000);
 }
 
 /**
  * 制限時間を超えたら次の文章に移る処理
-*/
+ */
 function timeUp() {
     renderNextSentence();
 }
+
+const audioDir = './audio/'; // audioディレクトリの名前が変わってもここですぐに変更できるように変数に格納
 
 /**
  * 音源を鳴らす関数
  * @param {Array} soundsArray 各音源の格納されている配列
  * @param {String} path 音源の入っているフォルダ
- * @param {Boolean} torF trueを取り、renderNextSentenceを実行する
+ * @param {String} fileType ファイルの拡張子
+ * @param {Event} isEnded 'ended'を入れるとsoundが鳴り終わり次第プロミスの処理を実行する
  */
-function createSound(soundsArray, path, isEnded) {
+function createSound(soundsArray, path, fileType = 'mp3', isEnded = 'ended') {
     const soundIndex = Math.floor(Math.random() * soundsArray.length);
-    const sound = new Audio(`./audio/${path}/${soundsArray[soundIndex]}.mp3`);
-    sound.currentTime = 0;
+    const sound = new Audio(`${audioDir}${path}/${soundsArray[soundIndex]}.${fileType}`);
+
     sound.volume = 0.7;
     sound.play();
-    return new Promise((resolve) => {
-        sound.addEventListener(isEnded, () => {
-            resolve();
-        });
+
+    return new Promise(resolve => {
+        sound.addEventListener(isEnded, resolve);
+        sound.addEventListener('error', reject => console.log(`Error: ${reject}`));
     });
 }
 
@@ -333,19 +337,19 @@ function createSound(soundsArray, path, isEnded) {
  * BGMをならす関数
  * @param {Object} bgm newで宣言したBGM
  * @param {Number} volume 音量調節の数字
- * @param {Boolean} trueORfalseでtrueならBGMをループ
- * @param {String} isEnded 'ended'を入れてsoundが終わってからのプロミス処理をする
+ * @param {Boolean} isLoop trueならBGMをループ
+ * @param {Event} isEnded 'ended'を入れるとBGMが終わり次第プロミスの処理を実行する
 */
-function playBgm(bgm, volume, isLoop, isEnded) {
-    bgm.currentTime = 0;
+function playBgm(bgm, volume, isLoop, isEnded = 'ended') {
+    bgm.currentTime = 0; // リスタートの時にBGMの進行状況をリセットする
+
     bgm.volume = volume;
     bgm.loop = isLoop;
     bgm.play();
-    return new Promise((resolve) => {
-        bgm.addEventListener(isEnded, () => {
-            resolve();
-        });
-    });
+
+    return new Promise(resolve =>
+        bgm.addEventListener(isEnded, resolve)
+    );
 }
 
 /**
@@ -413,6 +417,7 @@ function arrayToArray(sourceArray, newArray) {
 
 let paused = false; // 時間経過のフラグ
 let entireTimerId;
+
 /**
  * タイピングゲーム全体の制限時間を処理する関数
  */
@@ -432,35 +437,35 @@ function gameTime() {
     }, 1000);
 }
 
-const scoreDisplay = document.getElementById('score');
 let score = 0;
 
+/**
+ * 
+ * @param {String} sentence ターゲットの文章
+ * @param {Number} finishTime タイプを終えた時間
+ * @param {Number} missCount ミスした回数
+ * @returns スコア
+ */
 function scoreFunc(sentence, finishTime, missCount) {
     const averageKeySpeed = 5; // 1秒間に叩けるキーの数
-    const LengthOfTargetText = sentence.length; // 文章の長さ
-    const averageTypeSpeed = LengthOfTargetText / averageKeySpeed; // タイプ文章を打ち終わる平均時間
+    const sentenceLength = sentence.length; // 文章の長さ
+    const averageTypeSpeed = sentenceLength / averageKeySpeed; // タイプ文章を打ち終わる平均時間
     const takenTime = 15 - finishTime; // 実際にかかった時間
-    console.log('長さ' + LengthOfTargetText);
-    console.log('速さ' + averageTypeSpeed);
-    console.log('実際' + takenTime);
-    let tentativeScore = LengthOfTargetText * 10; // tentative → 「仮の」
-    if (missCount >= 10) {
-        score += 0;
-        scoreDisplay.innerText = score;
-    } else if ((takenTime <= averageTypeSpeed) && (missCount === 0)) {
-        score += tentativeScore;
-        scoreDisplay.innerText = score; // パーフェクトタイプなのでtentativeScoreをそのまま加算
-    } else if ((takenTime <= averageTypeSpeed) && (missCount >= 1)) {
-        score += tentativeScore * 0.8;
-        scoreDisplay.innerText = score;
-    } else if ((takenTime >= averageTypeSpeed) && (missCount === 0)) {
-        score += tentativeScore * 0.7;
-        scoreDisplay.innerText = score;
-    } else if (takenTime >= averageTypeSpeed) {
-        score += tentativeScore * 0.5;
-        scoreDisplay.innerText = score;
-    }
-}
+    let tentativeScore = sentenceLength * 10; // tentative → 「仮の」
 
-//console.log('test');
-//console.log(sentencesToBeTyped.length);
+    if (missCount >= 10) { // ミスが10以上あった場合
+        return score;
+    }
+
+    if ((takenTime <= averageTypeSpeed) && (missCount === 0)) { // 平均時間より速い且つミス数が0
+        score += tentativeScore;
+    } else if ((takenTime <= averageTypeSpeed) && (missCount >= 1)) { // 平均時間より速い且つミス数が1以上10以内
+        score += tentativeScore * 0.8;
+    } else if ((takenTime >= averageTypeSpeed) && (missCount === 0)) { // 平均時間より遅いがミス数が0
+        score += tentativeScore * 0.7;
+    } else if (takenTime >= averageTypeSpeed) { // その他(平均時間より遅くミス数が1以上10以内)
+        score += tentativeScore * 0.5;
+    }
+
+    return score;
+}
