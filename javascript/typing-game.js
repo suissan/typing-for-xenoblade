@@ -101,7 +101,9 @@ addEventListener("keydown", (e) => {
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
                     container.style.opacity = 0.8;
-                    getBody.style.backgroundImage = 'url(../image/nia2.jpg)';
+                    getBody.style.backgroundImage = 'url(../image/nia2.jpg)'; // 開発用
+                    //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia2.jpg?raw=true)'; // 実践用
+
                     playBgm(chainAttack, 0.4, true);
                     renderNextSentence();
                 });
@@ -139,7 +141,8 @@ addEventListener('keydown', (event) => {
     if (event.key === " " && startFlag === true) {
         startFlag = false;
         container.style.opacity = 1;
-        getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)';
+        getBody.style.backgroundImage = 'url(../image/nia1.jpg)'; // 開発用
+        //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)'; // 実践用
         startCountDown.style.display = "block";
         startCountDownFnc();
         createSound(noaSoundArray, 'start', 'mp3');
