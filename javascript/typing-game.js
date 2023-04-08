@@ -139,7 +139,7 @@ addEventListener('keydown', (event) => {
     if (event.key === " " && startFlag === true) {
         startFlag = false;
         container.style.opacity = 1;
-        getBody.style.backgroundImage = 'url(https://suissan.github.io/image/nia1.jpg)';
+        getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)';
         startCountDown.style.display = "block";
         startCountDownFnc();
         createSound(noaSoundArray, 'start', 'mp3');
