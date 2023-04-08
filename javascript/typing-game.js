@@ -91,12 +91,13 @@ addEventListener("keydown", (e) => {
 
     if (correct == true) {
         scoreDisplay.innerText = scoreFunc(sentenceArray, timer.innerText, missCounter);
+        checkRandomIndex.push(randomIndex);
         paused = true;
         canPushKey = false;
-        const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
-        splicedSentencesArray.push(splicedSentence[0]);
+        //const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
+        //splicedSentencesArray.push(splicedSentence[0]);
         clearInterval(interval); // タイプ成功した瞬間にタイマーを止める
-        if (sentencesToBeTyped.length === splicedSentencesArray.length) {
+        if ((sentencesToBeTyped.length * 0.5) === checkRandomIndex.length) {
             stopBgm(youWillRecallOurNames);
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
@@ -106,24 +107,20 @@ addEventListener("keydown", (e) => {
 
                     playBgm(chainAttack, 0.4, true);
                     renderNextSentence();
-                });
+                })
             return;
-        } else if (sentencesToBeTyped.length === 0) {
+        } else if (sentencesToBeTyped.length === checkRandomIndex.length) {
             const chainAttackFan = new Audio("./audio/chain-attack-fan.mp3");
             timer.style.display = "none";
             invisibleElement(mainContents, true);
             finishMessageOne.style.display = "block";
             finishMessageOne.innerText = 'CHAIN ATTACK FINISH';
-            arrayToArray(splicedSentencesArray, sentencesToBeTyped);
-            splicedSentencesArray.length = 0;
+            //arrayToArray(splicedSentencesArray, sentencesToBeTyped);
+            //splicedSentencesArray.length = 0;
+            checkRandomIndex.length = 0;
             stopBgm(chainAttack);
             playBgm(chainAttackFan, 0.5, false, 'ended')
-                .then(() => {
-                    createSound(allCorrectSoundArray, 'allcorrect', 'mp3');
-                    finishMessageTwo.style.display = 'block';
-                    finishMessageTwo.innerText = 'Restart Please Space key';
-                    startFlag = true;
-                });
+                .then(gameStop);
             return;
         }
         createSound(correctDialogueArray, 'correct', 'mp3', 'ended')
@@ -161,10 +158,15 @@ addEventListener('keydown', (event) => {
     return;
 });
 
+const checkRandomIndex = [];
+
 let randomIndex;
 /* ランダムな文章を取得して、表示する */
 function renderNextSentence() {
-    randomIndex = Math.floor(Math.random() * sentencesToBeTyped.length); // ランダムなインデックスを作成
+    do {
+        randomIndex = Math.floor(Math.random() * sentencesToBeTyped.length); // ランダムなインデックスを作成
+    } while (checkRandomIndex.includes(randomIndex));
+    
     const displayedSentence = sentencesToBeTyped[randomIndex].sentenceJa; // 表示される文章を取得
     const sentenceJaType = sentencesToBeTyped[randomIndex].sentence.split(""); // タイピングされる文章を配列形式で取得格納
     const xenoCharacter = sentencesToBeTyped[randomIndex].chara; // セリフのキャラクター
@@ -425,7 +427,7 @@ let entireTimerId;
  * タイピングゲーム全体の制限時間を処理する関数
  */
 function gameTime() {
-    let entire = 5;
+    let entire = 120;
     entireTime.innerText = `残り ${entire} 秒`;
     entireTimerId = setInterval(() => {
         /** pausedがtrueになるとreturnで後続の処理がされなくて時間経過が一時停止する */
@@ -436,6 +438,8 @@ function gameTime() {
         entireTime.innerText = `残り ${entire} 秒`;
         if (entire <= 0) {
             clearInterval(entireTimerId);
+            //gameStop();
+
         }
     }, 1000);
 }
@@ -471,4 +475,11 @@ function scoreFunc(sentence, finishTime, missCount) {
     }
 
     return score;
+}
+
+function gameStop() {
+    createSound(allCorrectSoundArray, 'allcorrect', 'mp3');
+    finishMessageTwo.style.display = 'block';
+    finishMessageTwo.innerText = 'Restart Please Space key';
+    startFlag = true;
 }
