@@ -27,8 +27,6 @@ const typeSound = new Audio("./audio/typing-sound.mp3");
 import { romanMap } from './romanMap.js';
 import { sentencesToBeTyped } from './sentences.js';
 
-const splicedSentencesArray = [];
-
 const typedKeyArray = [];
 
 let canPushKey = false;
@@ -89,23 +87,24 @@ addEventListener("keydown", (e) => {
         }
     });
 
+    /* タイプ成功 */
     if (correct == true) {
         scoreDisplay.innerText = scoreFunc(sentenceArray, timer.innerText, missCounter);
         existingIndexes.push(randomIndex);
         paused = true;
         canPushKey = false;
         clearInterval(interval); // タイプ成功した瞬間にタイマーを止める
-        if ((sentencesToBeTyped.length * 0.5) === existingIndexes.length) {
-            stopBgm(youWillRecallOurNames);
+
+        if ((Math.round(sentencesToBeTyped.length / 2)) === existingIndexes.length) {
+            stopBgm(youWillRecallOurNames); gameStop
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
                     container.style.opacity = 0.8;
                     getBody.style.backgroundImage = 'url(../image/nia2.jpg)'; // 開発用
                     //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia2.jpg?raw=true)'; // 実践用
-
                     playBgm(chainAttack, 0.4, true);
                     renderNextSentence();
-                })
+                });
             return;
         } else if (sentencesToBeTyped.length === existingIndexes.length) {
             const chainAttackFan = new Audio("./audio/chain-attack-fan.mp3");
@@ -162,7 +161,7 @@ function renderNextSentence() {
     do {
         randomIndex = Math.floor(Math.random() * sentencesToBeTyped.length); // ランダムなインデックスを作成
     } while (existingIndexes.includes(randomIndex));
-    
+
     const displayedSentence = sentencesToBeTyped[randomIndex].sentenceJa; // 表示される文章を取得
     const sentenceJaType = sentencesToBeTyped[randomIndex].sentence.split(""); // タイピングされる文章を配列形式で取得格納
     const xenoCharacter = sentencesToBeTyped[randomIndex].chara; // セリフのキャラクター
@@ -293,7 +292,6 @@ function startTimer() {
         timer.innerText = originTime - getTimerTime();
         if (timer.innerText <= 0) {
             clearInterval(interval); // バグの温床を防ぐ処理
-            timeUp();
         }
     }, 1000);
 }
@@ -303,13 +301,6 @@ function startTimer() {
  */
 function getTimerTime() {
     return Math.floor((new Date() - startTime) / 1000);
-}
-
-/**
- * 制限時間を超えたら次の文章に移る処理
- */
-function timeUp() {
-    renderNextSentence();
 }
 
 const audioDir = './audio/'; // audioディレクトリの名前が変わってもここですぐに変更できるように変数に格納
@@ -363,17 +354,15 @@ function stopBgm(bgm) {
 
 /**
  * 開始時の3秒カウントダウンをする関数
-*/
+ */
 function startCountDownFnc() {
-    startCountDown.innerText = 3;
     let second = 3;
-    let count = 0;
-    let timerId = setInterval(() => {
-        count++;
-        startCountDown.innerText = second - 1;
-        second -= 1;
-        if (count === 3) {
-            clearInterval(timerId);
+    startCountDown.innerText = second;
+    const startTimerId = setInterval(() => {
+        second--;
+        startCountDown.innerText = second;
+        if (second === 0) {
+            clearInterval(startTimerId);
             invisibleElement(startCountDown, false);
         }
     }, 1000);
@@ -410,6 +399,7 @@ let entireTimerId;
 
 /**
  * タイピングゲーム全体の制限時間を処理する関数
+ * 最終的に、残り時間もスコアの評価に入れることにするため、今は使わなくてもこの関数は残しておく
  */
 function gameTime() {
     let entire = 120;
@@ -423,8 +413,6 @@ function gameTime() {
         entireTime.innerText = `残り ${entire} 秒`;
         if (entire <= 0) {
             clearInterval(entireTimerId);
-            //gameStop();
-
         }
     }, 1000);
 }
@@ -447,6 +435,10 @@ function scoreFunc(sentence, finishTime, missCount) {
 
     if (missCount >= 10) { // ミスが10以上あった場合
         return score;
+    }
+
+    if (finishTime <= 0) {
+        return score += tentativeScore * 0.2; // タイムが0以降
     }
 
     if ((takenTime <= averageTypeSpeed) && (missCount === 0)) { // 平均時間より速い且つミス数が0

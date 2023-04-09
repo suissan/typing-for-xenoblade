@@ -21,5 +21,6 @@ export const sentencesToBeTyped = [
     { chara: 'テスト', sentenceJa: 'い', sentence: 'い' },
     { chara: 'テスト', sentenceJa: 'う', sentence: 'う' },
     { chara: 'テスト', sentenceJa: 'え', sentence: 'え' },
-    { chara: 'テスト', sentenceJa: 'お', sentence: 'お' }
+    { chara: 'テスト', sentenceJa: 'お', sentence: 'お' },
+    { chara: 'テスト', sentenceJa: 'か', sentence: 'か' }
 ];
