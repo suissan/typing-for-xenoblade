@@ -405,17 +405,6 @@ function visibleAllChildren(element) {
     return;
 }
 
-/**
- * sentencesToBeTypedの中身を元に戻す関数
- * @param {Array} sourceArray splicedSentencesArrayが入る
- * @param {Array} newArray sentencesToBeTypedが入る
-*/
-function arrayToArray(sourceArray, newArray) {
-    for (let i = 0; i < sourceArray.length; i++) {
-        newArray.push(sourceArray[i]);
-    }
-}
-
 let paused = false; // 時間経過のフラグ
 let entireTimerId;
 
