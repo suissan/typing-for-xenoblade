@@ -17,8 +17,9 @@ export const sentencesToBeTyped = [
     //{ chara: 'セナ', sentenceJa: 'もう 一緒に筋トレできないね', sentence: 'もういっしょにきんとれできないね' },
     //{ chara: 'ランツ', sentenceJa: '死ぬ気でやんのと死ににいくのは全然違ぇよ', sentence: 'しぬきでやんのと　しににいくのはぜんぜんちげぇよ' },
     //{ chara: 'ユーニ', sentenceJa: 'よしわかった 殴る おいノア こいつ殴っていいよな！', sentence: 'よしわかったなぐる　おいのあこいつなぐっていいよな！' }
-    { chara: 'セナ', sentenceJa: 'もう 一緒に筋トレできないね', sentence: 'あああ' },
-    { chara: 'セナ', sentenceJa: 'もう 一緒に筋トレできないね', sentence: 'ああ' },
-    { chara: 'セナ', sentenceJa: 'もう 一緒に筋トレできないね', sentence: 'ああ' },
-    { chara: 'セナ', sentenceJa: 'もう 一緒に筋トレできないね', sentence: 'ああ' }
+    { chara: 'テスト', sentenceJa: 'あ', sentence: 'あ' },
+    { chara: 'テスト', sentenceJa: 'い', sentence: 'い' },
+    { chara: 'テスト', sentenceJa: 'う', sentence: 'う' },
+    { chara: 'テスト', sentenceJa: 'え', sentence: 'え' },
+    { chara: 'テスト', sentenceJa: 'お', sentence: 'お' }
 ];

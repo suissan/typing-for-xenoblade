@@ -91,13 +91,11 @@ addEventListener("keydown", (e) => {
 
     if (correct == true) {
         scoreDisplay.innerText = scoreFunc(sentenceArray, timer.innerText, missCounter);
-        checkRandomIndex.push(randomIndex);
+        existingIndexes.push(randomIndex);
         paused = true;
         canPushKey = false;
-        //const splicedSentence = sentencesToBeTyped.splice(randomIndex, 1);
-        //splicedSentencesArray.push(splicedSentence[0]);
         clearInterval(interval); // タイプ成功した瞬間にタイマーを止める
-        if ((sentencesToBeTyped.length * 0.5) === checkRandomIndex.length) {
+        if ((sentencesToBeTyped.length * 0.5) === existingIndexes.length) {
             stopBgm(youWillRecallOurNames);
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
@@ -109,15 +107,13 @@ addEventListener("keydown", (e) => {
                     renderNextSentence();
                 })
             return;
-        } else if (sentencesToBeTyped.length === checkRandomIndex.length) {
+        } else if (sentencesToBeTyped.length === existingIndexes.length) {
             const chainAttackFan = new Audio("./audio/chain-attack-fan.mp3");
             timer.style.display = "none";
             invisibleElement(mainContents, true);
             finishMessageOne.style.display = "block";
             finishMessageOne.innerText = 'CHAIN ATTACK FINISH';
-            //arrayToArray(splicedSentencesArray, sentencesToBeTyped);
-            //splicedSentencesArray.length = 0;
-            checkRandomIndex.length = 0;
+            existingIndexes.length = 0;
             stopBgm(chainAttack);
             playBgm(chainAttackFan, 0.5, false, 'ended')
                 .then(gameStop);
@@ -158,14 +154,14 @@ addEventListener('keydown', (event) => {
     return;
 });
 
-const checkRandomIndex = [];
+const existingIndexes = [];
 
 let randomIndex;
 /* ランダムな文章を取得して、表示する */
 function renderNextSentence() {
     do {
         randomIndex = Math.floor(Math.random() * sentencesToBeTyped.length); // ランダムなインデックスを作成
-    } while (checkRandomIndex.includes(randomIndex));
+    } while (existingIndexes.includes(randomIndex));
     
     const displayedSentence = sentencesToBeTyped[randomIndex].sentenceJa; // 表示される文章を取得
     const sentenceJaType = sentencesToBeTyped[randomIndex].sentence.split(""); // タイピングされる文章を配列形式で取得格納
