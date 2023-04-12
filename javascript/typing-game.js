@@ -33,7 +33,9 @@ let canPushKey = false;
 
 let countEight = 0;
 
-let missCounter = 0;
+let missCounter = 0; // 1文章についてのミス回数
+
+let totalMissCounter = 0; // ミスタイプの総数
 
 /* inputテキスト入力 合っているかどうかの判定 */
 addEventListener("keydown", (e) => {
@@ -80,6 +82,7 @@ addEventListener("keydown", (e) => {
         } else {
             typedKeyArray.splice(index, 1);
             missCounter++;
+            totalMissCounter++;
             characterSpan.classList.add("incorrect");
             characterSpan.classList.remove("correct");
             createSound(wrongSoundArray, 'miss', 'mp3');
@@ -96,7 +99,7 @@ addEventListener("keydown", (e) => {
         clearInterval(interval); // タイプ成功した瞬間にタイマーを止める
 
         if ((Math.round(sentencesToBeTyped.length / 2)) === existingIndexes.length) {
-            stopBgm(youWillRecallOurNames); gameStop
+            stopBgm(youWillRecallOurNames);
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
                     container.style.opacity = 0.8;
@@ -132,6 +135,7 @@ addEventListener('keydown', (event) => {
     /* スペースキーだったら */
     if (event.key === " " && startFlag === true) {
         startFlag = false;
+        totalMissCounter = 0;
         container.style.opacity = 1;
         getBody.style.backgroundImage = 'url(../image/nia1.jpg)'; // 開発用
         //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)'; // 実践用
@@ -257,6 +261,8 @@ function renderNextSentence() {
     missCounter = 0;
 
     startTimer();
+
+    //autoType(); テストが面倒な時に使う
 }
 
 /**
@@ -402,7 +408,7 @@ let entireTimerId;
  * 最終的に、残り時間もスコアの評価に入れることにするため、今は使わなくてもこの関数は残しておく
  */
 function gameTime() {
-    let entire = 120;
+    let entire = 180;
     entireTime.innerText = `残り ${entire} 秒`;
     entireTimerId = setInterval(() => {
         /** pausedがtrueになるとreturnで後続の処理がされなくて時間経過が一時停止する */
@@ -427,6 +433,7 @@ let score = 0;
  * @returns スコア
  */
 function scoreFunc(sentence, finishTime, missCount) {
+
     const averageKeySpeed = 5; // 1秒間に叩けるキーの数
     const sentenceLength = sentence.length; // 文章の長さ
     const averageTypeSpeed = sentenceLength / averageKeySpeed; // タイプ文章を打ち終わる平均時間
@@ -438,25 +445,56 @@ function scoreFunc(sentence, finishTime, missCount) {
     }
 
     if (finishTime <= 0) {
-        return score += tentativeScore * 0.2; // タイムが0以降
+        return score += Math.floor((tentativeScore * 0.2) / 10) * 10; // タイムが0以降
     }
 
     if ((takenTime <= averageTypeSpeed) && (missCount === 0)) { // 平均時間より速い且つミス数が0
-        score += tentativeScore;
+        score += Math.floor(tentativeScore / 10) * 10;
     } else if ((takenTime <= averageTypeSpeed) && (missCount >= 1)) { // 平均時間より速い且つミス数が1以上10以内
-        score += tentativeScore * 0.8;
+        score += Math.floor((tentativeScore * 0.8) / 10) * 10;
     } else if ((takenTime >= averageTypeSpeed) && (missCount === 0)) { // 平均時間より遅いがミス数が0
-        score += tentativeScore * 0.7;
+        score += Math.floor((tentativeScore * 0.7) / 10) * 10;
     } else if (takenTime >= averageTypeSpeed) { // その他(平均時間より遅くミス数が1以上10以内)
-        score += tentativeScore * 0.5;
+        score += Math.floor((tentativeScore * 0.5) / 10) * 10;
     }
+
+    return score;
+}
+
+function calculateBonusScore(endTime, totalMiss) {
+    /* \d+で[1-9]までの数字を探し、matchで数字のみ抽出 */
+    const target = endTime.match(/\d+/g); // 配列で還ってくる
+    const originScore = parseInt(target[0]) * 10;
+
+    /* 減点率を計算 */
+    const reductionRate = totalMiss / 100; // ミス回数を元スコアの1%とした場合
+
+    /* 減点後の最終ボーナススコア */
+    const finallyScore = Math.floor((originScore * (1 - reductionRate)) / 10) * 10;
+
+    score += finallyScore;
 
     return score;
 }
 
 function gameStop() {
     createSound(allCorrectSoundArray, 'allcorrect', 'mp3');
+    scoreDisplay.innerText = calculateBonusScore(entireTime.innerText, totalMissCounter);
     finishMessageTwo.style.display = 'block';
     finishMessageTwo.innerText = 'Restart Please Space key';
     startFlag = true;
 }
+
+//function autoType() {
+//    const array = [];
+//    const sentenceArray = typeDisplay.querySelectorAll("span");
+//    sentenceArray.forEach((character, index) => {
+//        array.push(character.innerText);
+//    });
+//    for (let i = 0; i < array.length; i++) {
+//        setTimeout(() => {
+//            const KEvent = new KeyboardEvent("keydown", { key: array[i] });
+//            dispatchEvent(KEvent)
+//        }, i * 130);
+//    }
+//}
