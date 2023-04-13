@@ -262,7 +262,7 @@ function renderNextSentence() {
 
     startTimer();
 
-    //autoType(); テストが面倒な時に使う
+    autoType(); //テストが面倒な時に使う
 }
 
 /**
@@ -408,7 +408,7 @@ let entireTimerId;
  * 最終的に、残り時間もスコアの評価に入れることにするため、今は使わなくてもこの関数は残しておく
  */
 function gameTime() {
-    let entire = 180;
+    let entire = 60;
     entireTime.innerText = `残り ${entire} 秒`;
     entireTimerId = setInterval(() => {
         /** pausedがtrueになるとreturnで後続の処理がされなくて時間経過が一時停止する */
@@ -471,10 +471,22 @@ function calculateBonusScore(endTime, totalMiss) {
 
     /* 減点後の最終ボーナススコア */
     const finallyScore = Math.floor((originScore * (1 - reductionRate)) / 10) * 10;
+    console.log(finallyScore);
+    console.log(finallyScore+score);
+    let tentativeSave =  score;
 
-    score += finallyScore;
+    /* ボーナス得点の加算アニメーション */
+    const countUpInterval = setInterval(() => {
+        if (tentativeSave !== (score + finallyScore)) {
+            tentativeSave += 1;
+            scoreDisplay.innerText = tentativeSave;
+            return;
+        }
+        console.log('aaa')
+        clearInterval(countUpInterval);
 
-    return score;
+        return tentativeSave;
+    }, 10);
 }
 
 function gameStop() {
@@ -485,16 +497,16 @@ function gameStop() {
     startFlag = true;
 }
 
-//function autoType() {
-//    const array = [];
-//    const sentenceArray = typeDisplay.querySelectorAll("span");
-//    sentenceArray.forEach((character, index) => {
-//        array.push(character.innerText);
-//    });
-//    for (let i = 0; i < array.length; i++) {
-//        setTimeout(() => {
-//            const KEvent = new KeyboardEvent("keydown", { key: array[i] });
-//            dispatchEvent(KEvent)
-//        }, i * 130);
-//    }
-//}
+function autoType() {
+    const array = [];
+    const sentenceArray = typeDisplay.querySelectorAll("span");
+    sentenceArray.forEach((character, index) => {
+        array.push(character.innerText);
+    });
+    for (let i = 0; i < array.length; i++) {
+        setTimeout(() => {
+            const KEvent = new KeyboardEvent("keydown", { key: array[i] });
+            dispatchEvent(KEvent)
+        }, i * 130);
+    }
+}
