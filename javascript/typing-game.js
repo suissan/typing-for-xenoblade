@@ -13,6 +13,7 @@ const typeDisplay = document.getElementById('typeDisplay');
 const finishMessages = document.getElementById('finishMessages');
 const finishMessageOne = document.getElementById('finishMessageOne');
 const finishMessageTwo = document.getElementById('finishMessageTwo');
+const bonusScoreDisplay = document.getElementById('bonusScore');
 const scoreDisplay = document.getElementById('score');
 const noaSoundArray = ['noa1', 'noa2', 'noa3'];
 const wrongSoundArray = ['miss1', 'miss2', 'miss3', 'miss4', 'miss5'];
@@ -28,6 +29,8 @@ import { romanMap } from './romanMap.js';
 import { sentencesToBeTyped } from './sentences.js';
 
 const typedKeyArray = [];
+
+const scoreStr = 'Score ';
 
 let canPushKey = false;
 
@@ -92,7 +95,7 @@ addEventListener("keydown", (e) => {
 
     /* タイプ成功 */
     if (correct == true) {
-        scoreDisplay.innerText = scoreFunc(sentenceArray, timer.innerText, missCounter);
+        scoreDisplay.innerText = `${scoreStr}${scoreFunc(sentenceArray, timer.innerText, missCounter)}`;
         existingIndexes.push(randomIndex);
         paused = true;
         canPushKey = false;
@@ -150,7 +153,7 @@ addEventListener('keydown', (event) => {
             canPushKey = true;
             renderNextSentence();
             gameTime();
-            scoreDisplay.innerText = 0;
+            scoreDisplay.innerText = `${scoreStr}${0}`;
             playBgm(youWillRecallOurNames, 0.05, true);
         }, 3000);
     }
@@ -262,7 +265,7 @@ function renderNextSentence() {
 
     startTimer();
 
-    autoType(); //テストが面倒な時に使う
+    //autoType(); //テストが面倒な時に使う
 }
 
 /**
@@ -471,18 +474,19 @@ function calculateBonusScore(endTime, totalMiss) {
 
     /* 減点後の最終ボーナススコア */
     const finallyScore = Math.floor((originScore * (1 - reductionRate)) / 10) * 10;
-    console.log(finallyScore);
-    console.log(finallyScore+score);
+
+    /* ボーナススコアを表示 */
+    bonusScoreDisplay.innerText = `ボーナススコア +${finallyScore}`;
+    /* 一時的にスコアを格納 */
     let tentativeSave =  score;
 
     /* ボーナス得点の加算アニメーション */
     const countUpInterval = setInterval(() => {
         if (tentativeSave !== (score + finallyScore)) {
             tentativeSave += 1;
-            scoreDisplay.innerText = tentativeSave;
+            scoreDisplay.innerText = `${scoreStr}${tentativeSave}`;
             return;
         }
-        console.log('aaa')
         clearInterval(countUpInterval);
 
         return tentativeSave;
@@ -491,7 +495,7 @@ function calculateBonusScore(endTime, totalMiss) {
 
 function gameStop() {
     createSound(allCorrectSoundArray, 'allcorrect', 'mp3');
-    scoreDisplay.innerText = calculateBonusScore(entireTime.innerText, totalMissCounter);
+    calculateBonusScore(entireTime.innerText, totalMissCounter);
     finishMessageTwo.style.display = 'block';
     finishMessageTwo.innerText = 'Restart Please Space key';
     startFlag = true;
