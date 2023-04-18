@@ -3,7 +3,6 @@
 const getBody = document.body;
 const entireTime = document.getElementById('entireTime');
 const timer = document.getElementById('timer');
-const container = document.getElementById('container');
 const startCountDown = document.getElementById('startCountDown');
 const startTitle = document.getElementById('startTitle');
 const mainContents = document.getElementById('mainContents');
@@ -37,7 +36,7 @@ import { sentencesToBeTyped } from './sentences.js';
 
 const typedKeyArray = [];
 
-const scoreStr = 'Score: ';
+const SCORE_STRING = 'Score: ';
 
 let canPushKey = false;
 
@@ -107,7 +106,6 @@ addEventListener("keydown", (e) => {
         paused = true;
         canPushKey = false;
         clearInterval(interval); // タイプ成功した瞬間にタイマーを止める
-
         if ((Math.round(sentencesToBeTyped.length / 2)) === existingIndexes.length) {
             stopBgm(youWillRecallOurNames);
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
@@ -126,7 +124,6 @@ addEventListener("keydown", (e) => {
             invisibleElement(mainContents, true);
             finishMessageOne.style.display = "block";
             finishMessageOne.innerText = 'CHAIN ATTACK FINISH';
-            existingIndexes.length = 0;
             stopBgm(chainAttack);
             playBgm(chainAttackFan, 0.5, false, 'ended')
                 .then(finishGame);
@@ -164,6 +161,7 @@ function init() {
     startFlag = false;
     score = 0;
     totalMissCounter = 0;
+    existingIndexes.length = 0;
     startCountDown.style.display = "block";
     //getBody.style.backgroundImage = 'url(../image/wllppr.png)'; // 開発用
     getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/wllppr.png?raw=true)'; // 実践用
@@ -360,9 +358,10 @@ function playBgm(bgm, volume, isLoop, isEnded = 'ended') {
     bgm.loop = isLoop;
     bgm.play();
 
-    return new Promise(resolve =>
-        bgm.addEventListener(isEnded, resolve)
-    );
+    return new Promise(resolve => {
+        bgm.addEventListener(isEnded, resolve);
+        bgm.addEventListener('error', reject => console.log(`Error: ${reject}`));
+    });
 }
 
 /**
@@ -500,12 +499,12 @@ function calculateFinallyScore(bonusScore) {
     if (finallyScore !== (score + bonusScore)) {
         const countUpInterval = setInterval(() => {
             finallyScore += 1;
-            finallyScoreDisplay.innerText = `Finally ${scoreStr}${finallyScore}`;
+            finallyScoreDisplay.innerText = `Finally ${SCORE_STRING}${finallyScore}`;
             (finallyScore === (score + bonusScore)) ? clearInterval(countUpInterval) : "";
             return;
         }, 10);
     } else {
-        finallyScoreDisplay.innerText = `Finally ${scoreStr}${finallyScore}`; // ボーナススコアが0だった場合
+        finallyScoreDisplay.innerText = `Finally ${SCORE_STRING}${finallyScore}`; // ボーナススコアが0だった場合
     }
 }
 
@@ -514,9 +513,9 @@ function finishGame() {
     const bonusScore = calculateBonusScore(entireTime.innerText, totalMissCounter);
     calculateFinallyScore(bonusScore);
     scoreDisplay.style.display = 'block';
-    scoreDisplay.innerText = `${scoreStr}${score}`;
+    scoreDisplay.innerText = `${SCORE_STRING}${score}`;
     bonusScoreDisplay.style.display = 'block';
-    bonusScoreDisplay.innerText = `Bonus ${scoreStr}${bonusScore}`;
+    bonusScoreDisplay.innerText = `Bonus ${SCORE_STRING}${bonusScore}`;
     totalMissDisplay.style.display = 'block';
     totalMissDisplay.innerText = `Total Miss: ${totalMissCounter}`;
     finishMessageTwo.style.display = 'block';
