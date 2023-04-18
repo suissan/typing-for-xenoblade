@@ -112,8 +112,8 @@ addEventListener("keydown", (e) => {
             stopBgm(youWillRecallOurNames);
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
-                    getBody.style.backgroundImage = 'url(../image/wllppr2.png)'; // 開発用
-                    //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia2.jpg?raw=true)'; // 実践用
+                    //getBody.style.backgroundImage = 'url(../image/wllppr2.png)'; // 開発用
+                    getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/wllppr2.png?raw=true)'; // 実践用
                     playBgm(chainAttack, 0.4, true);
                     renderNextSentence();
                 });
@@ -165,8 +165,8 @@ function init() {
     score = 0;
     totalMissCounter = 0;
     startCountDown.style.display = "block";
-    getBody.style.backgroundImage = 'url(../image/wllppr.png)'; // 開発用
-    //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)'; // 実践用
+    //getBody.style.backgroundImage = 'url(../image/wllppr.png)'; // 開発用
+    getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/wllppr.png?raw=true)'; // 実践用
     invisibleElement(entireTime, false);
     invisibleElement(startTitle, false);
     invisibleElement(finishMessages, true);
