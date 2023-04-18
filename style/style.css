@@ -10,8 +10,8 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background-image: url(../image/nia1.jpg),
-        url(../image/nia2.jpg);
+    background-image: url(../image/wllppr.png),
+        url(../image/wllppr2.png);
     /* この時点で画像が読み込まれてるからjs側でstyle操作したときにラグ無しで表示できる*/
     background-position: center;
     background-size: 100%;
@@ -31,6 +31,7 @@ body {
     font-weight: 600;
     padding: 4rem;
     border-radius: 0.5rem;
+    opacity: 0.8;
     width: 1000px;
     min-height: 300px;
     max-width: 90%;
@@ -49,12 +50,16 @@ body {
     font-weight: bold;
 }
 
+.finish-Messages {
+    text-align: center;
+}
+
 
 .finish-message-one {
     text-align: center;
     color: rgb(202, 82, 87);
     top: 2rem;
-    font-size: 5rem;
+    font-size: 4.5rem;
     font-weight: bold;
 }
 
@@ -85,29 +90,47 @@ body {
 
 .entire {
     position: absolute;
-    top: 1rem;
+    top: 3rem;
     font-size: 5rem;
     font-weight: bold;
-    color: rgb(255, 0, 0);
+    color: rgb(200, 20, 50);
     z-index: 1;
 }
 
-.score {
-    position: absolute;
-    top: 8rem;
+.finish-Messages .score {
+    text-align: left;
+    margin-left: 8rem;
+    display: inline-block;
     font-size: 3rem;
     font-weight: bold;
     color: rgb(54, 82, 225);
-    z-index: 1;
 }
 
-.bonusScore {
-    position: absolute;
-    top: 6rem;
-    font-size: 2rem;
+.finish-Messages .bonusScore {
+    text-align: left;
+    margin-left: 8rem;
+    display: inline-block;
+    font-size: 3rem;
     font-weight: bold;
     color: rgb(54, 82, 225);
-    z-index: 1;
+}
+
+.finish-Messages .finallyScore {
+    text-align: left;
+    display: inline-block;
+    margin-left: 8rem;
+    font-size: 4rem;
+    font-weight: bold;
+    color: rgb(54, 82, 225);
+}
+
+.finish-Messages .totalMiss {
+    text-align: left;
+    display: inline-block;
+    margin-left: 8rem;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: rgb(54, 82, 225);
 }
 
 .timer {

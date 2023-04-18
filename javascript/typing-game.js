@@ -13,8 +13,10 @@ const typeDisplay = document.getElementById('typeDisplay');
 const finishMessages = document.getElementById('finishMessages');
 const finishMessageOne = document.getElementById('finishMessageOne');
 const finishMessageTwo = document.getElementById('finishMessageTwo');
-const bonusScoreDisplay = document.getElementById('bonusScore');
 const scoreDisplay = document.getElementById('score');
+const bonusScoreDisplay = document.getElementById('bonusScore');
+const finallyScoreDisplay = document.getElementById('finallyScore');
+const totalMissDisplay = document.getElementById('totalMiss');
 const noaSoundArray = ['noa1', 'noa2', 'noa3'];
 const wrongSoundArray = ['miss1', 'miss2', 'miss3', 'miss4', 'miss5'];
 const shoutSoundArray = ['shout1', 'shout2', 'shout3', 'shout4', 'shout5', 'shout6', 'shout7', 'shout8', 'shout9'];
@@ -25,12 +27,17 @@ const youWillRecallOurNames = new Audio('./audio/You-Will-Recall-Our-Names.mp3')
 const chainAttack = new Audio("./audio/chain-attack.mp3");
 const typeSound = new Audio("./audio/typing-sound.mp3");
 
+(() => {
+    invisibleElement(finishMessages, true);
+    invisibleElement(timer, false);
+})();
+
 import { romanMap } from './romanMap.js';
 import { sentencesToBeTyped } from './sentences.js';
 
 const typedKeyArray = [];
 
-const scoreStr = 'Score ';
+const scoreStr = 'Score: ';
 
 let canPushKey = false;
 
@@ -95,7 +102,7 @@ addEventListener("keydown", (e) => {
 
     /* タイプ成功 */
     if (correct == true) {
-        scoreDisplay.innerText = `${scoreStr}${scoreFunc(sentenceArray, timer.innerText, missCounter)}`;
+        scoreFunc(sentenceArray, timer.innerText, missCounter);
         existingIndexes.push(randomIndex);
         paused = true;
         canPushKey = false;
@@ -105,8 +112,7 @@ addEventListener("keydown", (e) => {
             stopBgm(youWillRecallOurNames);
             createSound(lastSoundArray, 'last', 'mp3', 'ended')
                 .then(() => {
-                    container.style.opacity = 0.8;
-                    getBody.style.backgroundImage = 'url(../image/nia2.jpg)'; // 開発用
+                    getBody.style.backgroundImage = 'url(../image/wllppr2.png)'; // 開発用
                     //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia2.jpg?raw=true)'; // 実践用
                     playBgm(chainAttack, 0.4, true);
                     renderNextSentence();
@@ -114,14 +120,16 @@ addEventListener("keydown", (e) => {
             return;
         } else if (sentencesToBeTyped.length === existingIndexes.length) {
             const chainAttackFan = new Audio("./audio/chain-attack-fan.mp3");
+            clearInterval(entireTimerId);
             timer.style.display = "none";
+            invisibleElement(entireTime, false);
             invisibleElement(mainContents, true);
             finishMessageOne.style.display = "block";
             finishMessageOne.innerText = 'CHAIN ATTACK FINISH';
             existingIndexes.length = 0;
             stopBgm(chainAttack);
             playBgm(chainAttackFan, 0.5, false, 'ended')
-                .then(gameStop);
+                .then(finishGame);
             return;
         }
         createSound(correctDialogueArray, 'correct', 'mp3', 'ended')
@@ -137,28 +145,32 @@ let startFlag = true;
 addEventListener('keydown', (event) => {
     /* スペースキーだったら */
     if (event.key === " " && startFlag === true) {
-        startFlag = false;
-        totalMissCounter = 0;
-        container.style.opacity = 1;
-        getBody.style.backgroundImage = 'url(../image/nia1.jpg)'; // 開発用
-        //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)'; // 実践用
-        startCountDown.style.display = "block";
+        init();
         startCountDownFnc();
         createSound(noaSoundArray, 'start', 'mp3');
-        invisibleElement(startTitle, false);
-        invisibleElement(finishMessages, true);
         setTimeout(() => {
             visibleAllChildren(mainContents);
             timer.style.display = "block";
             canPushKey = true;
             renderNextSentence();
             gameTime();
-            scoreDisplay.innerText = `${scoreStr}${0}`;
             playBgm(youWillRecallOurNames, 0.05, true);
         }, 3000);
     }
     return;
 });
+
+function init() {
+    startFlag = false;
+    score = 0;
+    totalMissCounter = 0;
+    startCountDown.style.display = "block";
+    getBody.style.backgroundImage = 'url(../image/wllppr.png)'; // 開発用
+    //getBody.style.backgroundImage = 'url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/nia1.jpg?raw=true)'; // 実践用
+    invisibleElement(entireTime, false);
+    invisibleElement(startTitle, false);
+    invisibleElement(finishMessages, true);
+}
 
 const existingIndexes = [];
 
@@ -411,7 +423,8 @@ let entireTimerId;
  * 最終的に、残り時間もスコアの評価に入れることにするため、今は使わなくてもこの関数は残しておく
  */
 function gameTime() {
-    let entire = 60;
+    entireTime.style.display = "block";
+    let entire = 180;
     entireTime.innerText = `残り ${entire} 秒`;
     entireTimerId = setInterval(() => {
         /** pausedがtrueになるとreturnで後続の処理がされなくて時間経過が一時停止する */
@@ -461,7 +474,7 @@ function scoreFunc(sentence, finishTime, missCount) {
         score += Math.floor((tentativeScore * 0.5) / 10) * 10;
     }
 
-    return score;
+    //return score;
 }
 
 function calculateBonusScore(endTime, totalMiss) {
@@ -473,29 +486,39 @@ function calculateBonusScore(endTime, totalMiss) {
     const reductionRate = totalMiss / 100; // ミス回数を元スコアの1%とした場合
 
     /* 減点後の最終ボーナススコア */
-    const finallyScore = Math.floor((originScore * (1 - reductionRate)) / 10) * 10;
+    const bonusScore = Math.floor((originScore * (1 - reductionRate)) / 10) * 10;
 
-    /* ボーナススコアを表示 */
-    bonusScoreDisplay.innerText = `ボーナススコア +${finallyScore}`;
-    /* 一時的にスコアを格納 */
-    let tentativeSave =  score;
-
-    /* ボーナス得点の加算アニメーション */
-    const countUpInterval = setInterval(() => {
-        if (tentativeSave !== (score + finallyScore)) {
-            tentativeSave += 1;
-            scoreDisplay.innerText = `${scoreStr}${tentativeSave}`;
-            return;
-        }
-        clearInterval(countUpInterval);
-
-        return tentativeSave;
-    }, 10);
+    return bonusScore;
 }
 
-function gameStop() {
+function calculateFinallyScore(bonusScore) {
+    let finallyScore = score;
+
+    finallyScoreDisplay.style.display = 'block';
+
+    /* ボーナス得点の加算アニメーション */
+    if (finallyScore !== (score + bonusScore)) {
+        const countUpInterval = setInterval(() => {
+            finallyScore += 1;
+            finallyScoreDisplay.innerText = `Finally ${scoreStr}${finallyScore}`;
+            (finallyScore === (score + bonusScore)) ? clearInterval(countUpInterval) : "";
+            return;
+        }, 10);
+    } else {
+        finallyScoreDisplay.innerText = `Finally ${scoreStr}${finallyScore}`; // ボーナススコアが0だった場合
+    }
+}
+
+function finishGame() {
     createSound(allCorrectSoundArray, 'allcorrect', 'mp3');
-    calculateBonusScore(entireTime.innerText, totalMissCounter);
+    const bonusScore = calculateBonusScore(entireTime.innerText, totalMissCounter);
+    calculateFinallyScore(bonusScore);
+    scoreDisplay.style.display = 'block';
+    scoreDisplay.innerText = `${scoreStr}${score}`;
+    bonusScoreDisplay.style.display = 'block';
+    bonusScoreDisplay.innerText = `Bonus ${scoreStr}${bonusScore}`;
+    totalMissDisplay.style.display = 'block';
+    totalMissDisplay.innerText = `Total Miss: ${totalMissCounter}`;
     finishMessageTwo.style.display = 'block';
     finishMessageTwo.innerText = 'Restart Please Space key';
     startFlag = true;
