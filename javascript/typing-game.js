@@ -274,8 +274,6 @@ function renderNextSentence() {
     missCounter = 0;
 
     startTimer();
-
-    //autoType(); //テストが面倒な時に使う
 }
 
 /**
@@ -521,18 +519,4 @@ function finishGame() {
     finishMessageTwo.style.display = 'block';
     finishMessageTwo.innerText = 'Restart Please Space key';
     startFlag = true;
-}
-
-function autoType() {
-    const array = [];
-    const sentenceArray = typeDisplay.querySelectorAll("span");
-    sentenceArray.forEach((character, index) => {
-        array.push(character.innerText);
-    });
-    for (let i = 0; i < array.length; i++) {
-        setTimeout(() => {
-            const KEvent = new KeyboardEvent("keydown", { key: array[i] });
-            dispatchEvent(KEvent)
-        }, i * 130);
-    }
 }
