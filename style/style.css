@@ -10,8 +10,8 @@ body {
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    background-image: url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/wllppr.png?raw=true),
-        url(https://github.com/suissan/typing-for-xenoblade/blob/main/image/wllppr2.png?raw=true);
+    background-image: url(../image/wllppr.png),
+        url(../image/wllppr2.png);
     /* この時点で画像が読み込まれてるからjs側でstyle操作したときにラグ無しで表示できる*/
     background-position: center;
     background-size: 100%;
